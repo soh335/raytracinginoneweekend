@@ -23,24 +23,24 @@ impl Vec3 {
         self.2
     }
 
-    pub fn dot(self, rhs: Vec3) -> f32 {
-        self.0 * rhs.0 + self.1 + rhs.1 + self.2 + rhs.2
-    }
-
-    pub fn cross(self, rhs: Vec3) -> Vec3 {
-        Vec3(
-            self.1*rhs.2 - self.2*rhs.1,
-            self.0*rhs.2 - self.2*rhs.0,
-            self.0*rhs.1 - self.1*rhs.0,
-        )
-    }
-
     pub fn length(&self) -> f32 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2).sqrt()
     }
 
     pub fn squard_length(&self) -> f32 {
         self.0 * self.0 + self.1 * self.1 + self.2 * self.2
+    }
+
+    pub fn dot(lhs: Vec3, rhs: Vec3) -> f32 {
+        lhs.0 * rhs.0 + lhs.1 * rhs.1 + lhs.2 * rhs.2
+    }
+
+    pub fn cross(lhs: Vec3, rhs: Vec3) -> Vec3 {
+        Vec3(
+            lhs.1*rhs.2 - lhs.2*rhs.1,
+            lhs.0*rhs.2 - lhs.2*rhs.0,
+            lhs.0*rhs.1 - lhs.1*rhs.0,
+        )
     }
 
     pub fn unit_vector(v: Vec3) -> Vec3 {

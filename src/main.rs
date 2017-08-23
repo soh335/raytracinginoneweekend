@@ -3,7 +3,19 @@ use raytracinginoneweekend::*;
 use vec3::*;
 use ray::*;
 
+fn hit_sphere(center: Vec3, radius: f32, r: &Ray) -> bool {
+    let oc = r.origin() - center;
+    let a = Vec3::dot(r.direction(), r.direction());
+    let b = 2.0 * Vec3::dot(oc, r.direction());
+    let c = Vec3::dot(oc, oc) - radius*radius;
+    let discriminant = b*b - 4.0*a*c;
+    discriminant > 0.0
+}
+
 fn color(r: &Ray) -> Vec3 {
+    if hit_sphere(Vec3(0.0,0.0,-1.0),0.5,r) {
+        return Vec3(1.0,0.0,0.0)
+    }
     let unit_direction = Vec3::unit_vector(r.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
     (1.0-t)*Vec3(1.0,1.0,1.0) + t*Vec3(0.5,0.7,1.0)
