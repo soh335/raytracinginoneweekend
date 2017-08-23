@@ -1,30 +1,20 @@
 extern crate raytracinginoneweekend;
+use std::f32;
 use raytracinginoneweekend::*;
 use vec3::*;
 use ray::*;
+use sphere::*;
+use hitable_list::*;
+use hitable::*;
 
-fn hit_sphere(center: Vec3, radius: f32, r: &Ray) -> f32 {
-    let oc = r.origin() - center;
-    let a = Vec3::dot(r.direction(), r.direction());
-    let b = 2.0 * Vec3::dot(oc, r.direction());
-    let c = Vec3::dot(oc, oc) - radius*radius;
-    let discriminant = b*b - 4.0*a*c;
-    if discriminant < 0.0 {
-        -1.0
+fn color<T: Hitable>(r: &Ray, world: &T) -> Vec3 {
+    if let Some(rec) = world.hit(r, 0.0, f32::MAX) {
+        0.5 * (Vec3::unit_vector(rec.normal)+Vec3(1.0,1.0,1.0))
     } else {
-        (-b - discriminant.sqrt()) / 2.0 * a
+        let unit_direction = Vec3::unit_vector(r.direction());
+        let t = 0.5 * (unit_direction.y() + 1.0);
+        (1.0-t)*Vec3(1.0,1.0,1.0) + t*Vec3(0.5,0.7,1.0)
     }
-}
-
-fn color(r: &Ray) -> Vec3 {
-    let t = hit_sphere(Vec3(0.0,0.0,-1.0),0.5,r);
-    if t > 0.0 {
-        let n = Vec3::unit_vector(r.point_at_parameter(t) - Vec3(0.0,0.0,-1.0));
-        return 0.5 * (n+Vec3(1.0,1.0,1.0))
-    }
-    let unit_direction = Vec3::unit_vector(r.direction());
-    let t = 0.5 * (unit_direction.y() + 1.0);
-    (1.0-t)*Vec3(1.0,1.0,1.0) + t*Vec3(0.5,0.7,1.0)
 }
 
 fn main() {
@@ -32,6 +22,10 @@ fn main() {
     let ny = 100;
 
     print!("P3\n{} {}\n255\n", nx, ny);
+
+    let mut world = HitableList::new();
+    world.push(Box::new(Sphere{center: Vec3(0.0,0.0,-1.0), radius: 0.5}));
+    world.push(Box::new(Sphere{center: Vec3(0.0,-100.5,-1.0), radius: 100.0}));
 
     let lower_left_corner = Vec3(-2.0,-1.0,-1.0);
     let horizontal = Vec3(4.0,0.0,0.0);
@@ -43,10 +37,10 @@ fn main() {
             let u = i as f32 / nx as f32;
             let v = j as f32 / ny as f32;
             let r = Ray(origin, lower_left_corner + u * horizontal + v * vertical);
-            let col = color(&r);
-            let ir = (255.59*col.x()) as i64;
-            let ig = (255.59*col.y()) as i64;
-            let ib = (255.59*col.z()) as i64;
+            let col = color(&r, &world);
+            let ir = (255.59*col.x()) as u8;
+            let ig = (255.59*col.y()) as u8;
+            let ib = (255.59*col.z()) as u8;
             print!("{} {} {}\n", ir, ig, ib);
         }
     }
