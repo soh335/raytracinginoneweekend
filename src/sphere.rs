@@ -24,11 +24,11 @@ impl Hitable for Sphere {
         let discriminant = b*b - 4.0*a*c;
         if discriminant > 0.0 {
             let discriminant_sqrt = discriminant.sqrt();
-            let temp = (-b - discriminant_sqrt ) / 2.0 * a;
+            let temp = (-b - discriminant_sqrt ) / (2.0 * a);
             if temp < t_max && temp > t_min {
                 return Some(self.build_hit_record(temp, r))
             }
-            let temp = (-b + discriminant_sqrt) / 2.0 * a;
+            let temp = (-b + discriminant_sqrt) / (2.0 * a);
             if temp < t_max && temp > t_min {
                 return Some(self.build_hit_record(temp, r))
             }
