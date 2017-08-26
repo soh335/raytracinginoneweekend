@@ -1,10 +1,12 @@
 use vec3::Vec3;
 use ray::Ray;
 use hitable::*;
+use material::Material;
 
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
+    pub material: Box<Material>,
 }
 
 impl Sphere {
@@ -16,7 +18,7 @@ impl Sphere {
 }
 
 impl Hitable for Sphere {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<(HitRecord, &Box<Material>)> {
         let oc = r.origin() - self.center;
         let a = Vec3::dot(r.direction(), r.direction());
         let b = 2.0 * Vec3::dot(oc, r.direction());
@@ -26,11 +28,11 @@ impl Hitable for Sphere {
             let discriminant_sqrt = discriminant.sqrt();
             let temp = (-b - discriminant_sqrt ) / (2.0 * a);
             if temp < t_max && temp > t_min {
-                return Some(self.build_hit_record(temp, r))
+                return Some((self.build_hit_record(temp, r), &self.material))
             }
             let temp = (-b + discriminant_sqrt) / (2.0 * a);
             if temp < t_max && temp > t_min {
-                return Some(self.build_hit_record(temp, r))
+                return Some((self.build_hit_record(temp, r), &self.material))
             }
         }
         return None

@@ -11,21 +11,19 @@ use sphere::*;
 use hitable_list::*;
 use hitable::*;
 use camera::*;
+use material::*;
 
-fn random_in_unit_sphere() -> Vec3 {
-    let mut rng = rand::thread_rng();
-    loop {
-        let p = Vec3(rng.gen_range(-1.0,1.0),rng.gen_range(-1.0,1.0),rng.gen_range(-1.0,1.0));
-        if p.squard_length() < 1.0 {
-            return p
+fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
+    if let Some((rec, material)) = world.hit(r, 0.000001, f32::MAX) {
+        if depth >= 50 {
+            return Vec3(0.0, 0.0, 0.0)
         }
-    }
-}
-
-fn color<T: Hitable>(r: &Ray, world: &T) -> Vec3 {
-    if let Some(rec) = world.hit(r, 0.000001, f32::MAX) {
-        let target = rec.p + Vec3::unit_vector(rec.normal) + random_in_unit_sphere();
-        0.5 * color( &Ray(rec.p, target - rec.p), world )
+        if let Some((attenuation, scatterd)) = material.scatter(r, &rec) {
+            return attenuation * color(&scatterd, world, depth+1)
+        }
+        else {
+            return Vec3(0.0, 0.0, 0.0)
+        }
     } else {
         let unit_direction = Vec3::unit_vector(r.direction());
         let t = 0.5 * (unit_direction.y() + 1.0);
@@ -41,8 +39,10 @@ fn main() {
     print!("P3\n{} {}\n255\n", nx, ny);
 
     let mut world = HitableList::new();
-    world.push(Box::new(Sphere{center: Vec3(0.0,0.0,-1.0), radius: 0.5}));
-    world.push(Box::new(Sphere{center: Vec3(0.0,-100.5,-1.0), radius: 100.0}));
+    world.push(Box::new(Sphere{center: Vec3(0.0,0.0,-1.0), radius: 0.5, material: Box::new(Lambertian{albed: Vec3(0.8,0.3,0.3)})}));
+    world.push(Box::new(Sphere{center: Vec3(0.0,-100.5,-1.0), radius: 100.0, material: Box::new(Lambertian{albed: Vec3(0.8,0.8,0.0)})}));
+    world.push(Box::new(Sphere{center: Vec3(1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{albed: Vec3(0.8,0.6,0.2)})}));
+    world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{albed: Vec3(0.8,0.8,0.8)})}));
 
     let camera = Camera::new();
     let mut rng = rand::thread_rng();
@@ -54,7 +54,7 @@ fn main() {
                 let u = (i as f32 + rng.gen_range(0.0,1.0)) / nx as f32;
                 let v = (j as f32 + rng.gen_range(0.0,1.0)) / ny as f32;
                 let r = camera.get_ray(u, v);
-                col = col + color(&r, &world)
+                col = col + color(&r, &world,0)
             }
             let col = col / ns as f32;
             let col = Vec3(col.x().sqrt(), col.y().sqrt(), col.z().sqrt());

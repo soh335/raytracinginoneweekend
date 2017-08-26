@@ -1,5 +1,6 @@
 use hitable::*;
 use ray::Ray;
+use material::Material;
 
 pub struct HitableList {
     list: Vec<Box<Hitable>>
@@ -15,15 +16,15 @@ impl HitableList {
 }
 
 impl Hitable for HitableList {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<(HitRecord, &Box<Material>)> {
         let mut closest_so_far = t_max;
-        let mut rec :Option<HitRecord> = None;
+        let mut ret :Option<(HitRecord, &Box<Material>)> = None;
         for v in self.list.iter() {
-            if let Some(_rec) = v.hit(r, t_min, closest_so_far) {
+            if let Some((_rec, material)) = v.hit(r, t_min, closest_so_far) {
                 closest_so_far = _rec.t;
-                rec = Some(_rec);
+                ret = Some((_rec, material));
             }
         }
-        rec
+        ret
     }
 }

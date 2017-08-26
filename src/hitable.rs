@@ -1,5 +1,6 @@
 use vec3::Vec3;
 use ray::Ray;
+use material::Material;
 
 #[derive(Debug)]
 pub struct HitRecord {
@@ -9,5 +10,5 @@ pub struct HitRecord {
 }
 
 pub trait Hitable {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitRecord>;
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<(HitRecord, &Box<Material>)>;
 }
