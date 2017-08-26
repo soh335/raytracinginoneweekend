@@ -41,8 +41,8 @@ fn main() {
     let mut world = HitableList::new();
     world.push(Box::new(Sphere{center: Vec3(0.0,0.0,-1.0), radius: 0.5, material: Box::new(Lambertian{albed: Vec3(0.8,0.3,0.3)})}));
     world.push(Box::new(Sphere{center: Vec3(0.0,-100.5,-1.0), radius: 100.0, material: Box::new(Lambertian{albed: Vec3(0.8,0.8,0.0)})}));
-    world.push(Box::new(Sphere{center: Vec3(1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{albed: Vec3(0.8,0.6,0.2)})}));
-    world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{albed: Vec3(0.8,0.8,0.8)})}));
+    world.push(Box::new(Sphere{center: Vec3(1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{fuzz: 0.3, albed: Vec3(0.8,0.6,0.2)})}));
+    world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{fuzz: 1.0, albed: Vec3(0.8,0.8,0.8)})}));
 
     let camera = Camera::new();
     let mut rng = rand::thread_rng();

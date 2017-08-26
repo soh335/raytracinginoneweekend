@@ -21,12 +21,13 @@ impl Material for Lambertian {
 
 pub struct Metal {
     pub albed: Vec3,
+    pub fuzz: f32,
 }
 
 impl Material for Metal {
     fn scatter(&self, r: &Ray, rec: &HitRecord) -> Option<(Vec3, Ray)> {
         let reflected = reflect(Vec3::unit_vector(r.direction()), rec.normal);
-        let scattered = Ray(rec.p, reflected);
+        let scattered = Ray(rec.p, reflected + self.fuzz * random_in_unit_sphere());
         if Vec3::dot(scattered.direction(), rec.normal) <= 0.0 {
             return None
         }
