@@ -45,7 +45,7 @@ fn main() {
     world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: 0.5, material: Box::new(Dielectric{ref_idx: 1.5})}));
     world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: -0.45, material: Box::new(Dielectric{ref_idx: 1.5})}));
 
-    let camera = Camera::new();
+    let camera = Camera::new(Vec3(-2.0,2.0,1.0), Vec3(0.0,0.0,-1.0), Vec3(0.0,1.0,0.0), 90.0, nx as f32/ny as f32);
     let mut rng = rand::thread_rng();
 
     for j in (0..ny).rev() {

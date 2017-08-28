@@ -1,5 +1,6 @@
 use vec3::Vec3;
 use ray::Ray;
+use std::f32;
 
 pub struct Camera {
     lower_left_corner: Vec3,
@@ -9,12 +10,22 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new() -> Self {
+    pub fn new(look_from: Vec3, look_at: Vec3, vup: Vec3, vfov: f32, aspect: f32) -> Self {
+        let theta = vfov * f32::consts::PI / 180.0;
+        let half_height = (theta/2.0).tan();
+        let half_width = half_height * aspect;
+        let w = Vec3::unit_vector(look_from - look_at);
+        let u = Vec3::unit_vector(Vec3::cross(vup, w));
+        let v = Vec3::cross(w, u);
+        let origin = look_from;
+        let lower_left_corner = origin - half_width*u - half_height*v - w;
+        let horizontal = 2.0*half_width*u;
+        let vertical = 2.0*half_height*v;
         Camera{
-            lower_left_corner: Vec3(-2.0,-1.0,-1.0),
-            horizontal:        Vec3(4.0,0.0,0.0),
-            vertical:          Vec3(0.0,2.0,0.0),
-            origin:            Vec3(0.0,0.0,0.0),
+            lower_left_corner: lower_left_corner,
+            horizontal:        horizontal,
+            vertical:          vertical,
+            origin:            origin,
         }
     }
 
