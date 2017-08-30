@@ -14,7 +14,7 @@ use camera::*;
 use material::*;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
-    if let Some((rec, material)) = world.hit(r, 0.000001, f32::MAX) {
+    if let Some((rec, material)) = world.hit(r, 0.001, f32::MAX) {
         if depth >= 50 {
             return Vec3(0.0, 0.0, 0.0)
         }
