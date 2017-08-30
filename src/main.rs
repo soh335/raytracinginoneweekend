@@ -31,24 +31,60 @@ fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     }
 }
 
+fn random_scene() -> HitableList {
+    let mut world = HitableList::new();
+    world.push(Box::new(Sphere{center: Vec3(0.0,-1000.0,0.0), radius: 1000.0, material: Box::new(Lambertian{albed: Vec3(0.5,0.5,0.5)})}));
+
+    let mut rng = rand::thread_rng();
+    for a in -11..11 {
+        for b in -11..11 {
+            let center = Vec3(a as f32 + 0.9*rng.gen_range(0.0,1.0), 0.2, b as f32 + 0.9*rng.gen_range(0.0,1.0));
+            if (center - Vec3(4.0,0.2,0.0)).length() > 0.9 {
+                let choosen_mut = rng.gen_range(0.0,1.0);
+                if choosen_mut < 0.8 {
+                    let mut f = || { rng.gen_range(0.0,1.0) * rng.gen_range(0.0,1.0) };
+                    world.push(Box::new(Sphere{center: center, radius: 0.2, material: Box::new(Lambertian{albed: Vec3(f(),f(),f())})}));
+                } else if choosen_mut < 0.95 {
+                    let mut f = || { 0.5 * ( 1.0 + rng.gen_range(0.0,1.0) ) };
+                    world.push(Box::new(Sphere{center: center, radius: 0.2, material: Box::new(Metal{fuzz: 1.0, albed: Vec3(f(), f(), f())})}));
+                } else {
+                    world.push(Box::new(Sphere{center: center, radius: 0.2, material: Box::new(Dielectric{ref_idx: 1.5})}));
+                }
+            }
+        }
+    }
+
+    world.push(Box::new(Sphere{center: Vec3(0.0,1.0,0.0), radius: 1.0, material: Box::new(Dielectric{ref_idx: 1.5})}));
+    world.push(Box::new(Sphere{center: Vec3(-4.0,1.0,0.0), radius: 1.0, material: Box::new(Lambertian{albed: Vec3(0.4,0.2,0.1)})}));
+    world.push(Box::new(Sphere{center: Vec3(4.0,1.0,0.0), radius: 1.0, material: Box::new(Metal{fuzz: 0.0, albed: Vec3(0.7,0.6,0.5)})}));
+
+    world
+}
+
 fn main() {
-    let nx = 200;
-    let ny = 100;
+    let nx = 1200;
+    let ny = 800;
+    //let nx = 200;
+    //let ny = 100;
     let ns = 100;
 
     print!("P3\n{} {}\n255\n", nx, ny);
 
-    let mut world = HitableList::new();
-    world.push(Box::new(Sphere{center: Vec3(0.0,0.0,-1.0), radius: 0.5, material: Box::new(Lambertian{albed: Vec3(0.1,0.2,0.5)})}));
-    world.push(Box::new(Sphere{center: Vec3(0.0,-100.5,-1.0), radius: 100.0, material: Box::new(Lambertian{albed: Vec3(0.8,0.8,0.0)})}));
-    world.push(Box::new(Sphere{center: Vec3(1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{fuzz: 0.3, albed: Vec3(0.8,0.6,0.2)})}));
-    world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: 0.5, material: Box::new(Dielectric{ref_idx: 1.5})}));
-    world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: -0.45, material: Box::new(Dielectric{ref_idx: 1.5})}));
+    let world = random_scene();
+    //let mut world = HitableList::new();
+    //world.push(Box::new(Sphere{center: Vec3(0.0,0.0,-1.0), radius: 0.5, material: Box::new(Lambertian{albed: Vec3(0.1,0.2,0.5)})}));
+    //world.push(Box::new(Sphere{center: Vec3(0.0,-100.5,-1.0), radius: 100.0, material: Box::new(Lambertian{albed: Vec3(0.8,0.8,0.0)})}));
+    //world.push(Box::new(Sphere{center: Vec3(1.0,0.0,-1.0), radius: 0.5, material: Box::new(Metal{fuzz: 0.3, albed: Vec3(0.8,0.6,0.2)})}));
+    //world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: 0.5, material: Box::new(Dielectric{ref_idx: 1.5})}));
+    //world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: -0.45, material: Box::new(Dielectric{ref_idx: 1.5})}));
 
-    let look_from = Vec3(3.0,3.0,2.0);
+    //let look_from = Vec3(3.0,3.0,2.0);
+    let look_from = Vec3(13.0,2.0,3.0);
     let look_at   = Vec3(0.0,0.0,-1.0);
-    let dist_to_focus = (look_from - look_at).length();
-    let aperture = 2.0;
+    //let dist_to_focus = (look_from - look_at).length();
+    let dist_to_focus = 10.0;
+    //let aperture = 2.0;
+    let aperture = 0.1;
     let camera = Camera::new(look_from, look_at, Vec3(0.0,1.0,0.0), 20.0, nx as f32/ny as f32,
     aperture, dist_to_focus);
     let mut rng = rand::thread_rng();
