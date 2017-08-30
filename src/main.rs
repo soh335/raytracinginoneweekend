@@ -79,6 +79,7 @@ fn main() {
     //world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: 0.5, material: Box::new(Dielectric{ref_idx: 1.5})}));
     //world.push(Box::new(Sphere{center: Vec3(-1.0,0.0,-1.0), radius: -0.45, material: Box::new(Dielectric{ref_idx: 1.5})}));
 
+    // parameters are taken from https://github.com/petershirley/raytracinginoneweekend/blob/master/main.cc#L75-L80
     //let look_from = Vec3(3.0,3.0,2.0);
     let look_from = Vec3(13.0,2.0,3.0);
     let look_at   = Vec3(0.0,0.0,-1.0);
