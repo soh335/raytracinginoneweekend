@@ -45,8 +45,9 @@ fn random_scene() -> HitableList {
                     let mut f = || { rng.gen_range(0.0,1.0) * rng.gen_range(0.0,1.0) };
                     world.push(Box::new(Sphere{center: center, radius: 0.2, material: Box::new(Lambertian{albed: Vec3(f(),f(),f())})}));
                 } else if choosen_mut < 0.95 {
+                    let fuzz = 0.5 * rng.gen_range(0.0,1.0);
                     let mut f = || { 0.5 * ( 1.0 + rng.gen_range(0.0,1.0) ) };
-                    world.push(Box::new(Sphere{center: center, radius: 0.2, material: Box::new(Metal{fuzz: 1.0, albed: Vec3(f(), f(), f())})}));
+                    world.push(Box::new(Sphere{center: center, radius: 0.2, material: Box::new(Metal{fuzz: fuzz, albed: Vec3(f(), f(), f())})}));
                 } else {
                     world.push(Box::new(Sphere{center: center, radius: 0.2, material: Box::new(Dielectric{ref_idx: 1.5})}));
                 }
